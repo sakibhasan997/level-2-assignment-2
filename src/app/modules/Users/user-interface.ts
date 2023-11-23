@@ -1,4 +1,4 @@
-export interface User {
+export interface Order {
   userId: number;
   username: string;
   password: string;
