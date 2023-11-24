@@ -1,53 +1,132 @@
 import { Schema, model } from 'mongoose';
-import { Order } from './Users/user-interface';
+import bcrypt from 'bcrypt';
+import UserModel, {
+  TAddress,
+  TName,
+  TOrder,
+  TUser,
+} from './Users/user-interface';
+import config from '../config/index';
 
-// const orderSchema = new Schema();
-
-const userSchema = new Schema<Order>({
-  userId: { type: Number, required: true, unique: true },
-  username: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-  fullName: {
-    firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+const nameSchema = new Schema<TName>({
+  firstName: {
+    type: String,
+    trim: true,
+    required: [true, 'First name is required'],
   },
-  age: { type: Number, required: true },
-  email: { type: String, required: true, unique: true },
-  isActive: { type: String, enum: ['active', 'inactive'] },
-  hobbies: [{ type: String }],
-  address: {
-    street: { type: String, required: true },
-    city: { type: String, required: true },
-    country: { type: String, required: true },
+  lastName: {
+    type: String,
+    trim: true,
+    required: [true, 'Last name is required'],
   },
-  orders: [
-    {
-      productName: { type: String, required: true },
-      price: { type: Number, required: true },
-      quantity: { type: Number, required: true },
-    },
-  ],
 });
 
-//   userId: { type: Number, required: true, unique: true },
-//   username: { type: String, required: true, unique: true },
-//   password: { type: String, required: true },
-//   fullName: {
-//     firstName: { type: String, required: true },
-//     lastName: { type: String, required: true },
-//   },
-//   age: { type: Number, required: true },
-//   email: { type: String, required: true, unique: true },
-//   isActive: { type: Boolean, required: true },
-//   hobbies: [{ type: String }],
-//   address: {
-//     street: { type: String, required: true },
-//     city: { type: String, required: true },
-//     country: { type: String, required: true },
-//   },
-//   orders: [orderSchema],
-// });
+const addressSchema = new Schema<TAddress>({
+  street: {
+    type: String,
+    trim: true,
+    required: [true, 'Street name is required'],
+  },
+  city: {
+    type: String,
+    trim: true,
+    required: [true, 'City name is required'],
+  },
+  country: {
+    type: String,
+    trim: true,
+    required: [true, 'Country name is required'],
+  },
+});
 
-const User = model<Order>('User', userSchema);
+const orderSchema = new Schema<TOrder>({
+  productName: {
+    type: String,
+    trim: true,
+    required: [true, 'Product name is required'],
+  },
+  price: {
+    type: Number,
+    trim: true,
+    required: [true, 'Product price is required'],
+  },
+  quantity: {
+    type: Number,
+    trim: true,
+    required: [true, 'Product quantity is required'],
+  },
+});
 
-export default User;
+const UserSchema = new Schema<TUser, UserModel>({
+  userId: {
+    type: Number,
+    unique: true,
+    required: true,
+  },
+  username: {
+    type: String,
+    unique: true,
+    trim: true,
+    required: true,
+  },
+  password: {
+    type: String,
+    required: [true, 'Password is required'],
+  },
+  fullName: {
+    type: nameSchema,
+    required: [true, 'Name name is required'],
+  },
+  age: {
+    type: Number,
+    trim: true,
+    required: [true, 'Age is required'],
+  },
+  email: {
+    type: String,
+    trim: true,
+    required: [true, 'Email is required'],
+    unique: true,
+  },
+  isActive: {
+    type: Boolean,
+    default: true,
+  },
+  hobbies: {
+    type: [String],
+    default: [],
+  },
+  address: {
+    type: addressSchema,
+    required: [true, 'Address is required'],
+  },
+  orders: {
+    type: [orderSchema],
+  },
+});
+
+UserSchema.pre('save', async function (next) {
+  const user = this; // eslint-disable-line
+  user.password = await bcrypt.hash(
+    user.password,
+    Number(config.bcryptSaltRounds),
+  );
+  next();
+});
+
+UserSchema.methods.toJSON = function () {
+  const user = this; // eslint-disable-line
+  const userObject = user.toObject();
+  delete userObject.password;
+  return userObject;
+};
+
+UserSchema.statics.isUserExists = async function (id: number) {
+  const user = await User.findOne(
+    { userId: id },
+    { password: 0, _id: 0, orders: 0, __v: 0 },
+  );
+  return user;
+};
+
+export const User = model<TUser, UserModel>('User', UserSchema);

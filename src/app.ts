@@ -1,17 +1,26 @@
 import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
-import { userRoutes } from './app/modules/Users/user.route';
+import { userRoute } from './app/modules/Users/user-route';
 
 const app: Application = express();
 
-// parsers
-app.use(express.json());
 app.use(cors());
-
-app.use('/api/users', userRoutes);
+app.use(express.json());
+app.use('/api/users', userRoute);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
+  res.send('Server is successfully running');
+});
+
+app.all('*', (req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    message: 'This page is not found',
+    error: {
+      code: 404,
+      description: 'This page is not found',
+    },
+  });
 });
 
 export default app;

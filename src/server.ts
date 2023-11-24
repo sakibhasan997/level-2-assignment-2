@@ -1,17 +1,19 @@
-import app from "./app";
-import config from "./app/config";
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+import app from './app';
+import config from './app/config/index';
 
-async function main() {
+const PORT = config.port || 5000;
+
+async function server() {
   try {
     await mongoose.connect(config.database_url as string);
 
-    app.listen(config.port, () => {
-      console.log(`Example app listening on port ${config.port}`);
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${config.port}`); // eslint-disable-line
     });
-  } catch (err) {
-    console.log(err);
+  } catch (error) {
+    console.log(error); // eslint-disable-line
   }
 }
 
-main();
+server().catch((err) => console.log(err)); // eslint-disable-line
