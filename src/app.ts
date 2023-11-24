@@ -9,7 +9,7 @@ app.use(express.json());
 app.use('/api/users', userRoute);
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Server is successfully running');
+  res.send('The Server is successfully running');
 });
 
 app.all('*', (req: Request, res: Response) => {
