@@ -85,7 +85,7 @@ const updateUser = async (req: Request, res: Response) => {
     const userData = req.body;
 
     const parsedUserData = userValidation.parse(userData);
-    const result = await UserServices.updateUserIntoDb(
+    const result = await UserServices.updateUserInfoDb(
       parseFloat(id),
       parsedUserData,
     );

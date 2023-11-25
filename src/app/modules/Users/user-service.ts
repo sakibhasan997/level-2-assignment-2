@@ -26,8 +26,8 @@ const getSingleUserFromDb = async (id: number) => {
   return user;
 };
 
-// put    api/users/:userId
-const updateUserIntoDb = async (id: number, user: TUser) => {
+// put update    api/users/:userId
+const updateUserInfoDb = async (id: number, user: TUser) => {
   const existsUser = await User.isUserExists(id);
   if (!existsUser) {
     throw new Error('User is not found');
@@ -106,7 +106,7 @@ export const UserServices = {
   createUserIntoDb,
   getAllUserFromDb,
   getSingleUserFromDb,
-  updateUserIntoDb,
+  updateUserInfoDb,
   deleteUserFromDb,
   addNewProductIntoOrder,
   getUserOrdersFromDb,

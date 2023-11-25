@@ -39,7 +39,7 @@ This Node.js Express application is built with TypeScript and leverages MongoDB 
 Run the application in development mode with automatic code reloading:
 
 ```bash
-npm run dev
+npm run start:js
 ```
 
 Certainly! Below is an updated README file based on your provided information:
@@ -78,7 +78,7 @@ This is a Node.js Express application written in TypeScript, utilizing MongoDB w
    ```env
    PORT=5000
    DB_URL=your_mongodb_url
-   BCRYPT_SALT_ROUNDS=12
+   BCRYPT=12
    ```
 
    Replace `your_mongodb_url` with the actual MongoDB URL.
