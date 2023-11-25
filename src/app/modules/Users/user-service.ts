@@ -33,9 +33,15 @@ const updateUserInfoDb = async (id: number, user: TUser) => {
     throw new Error('User is not found');
   }
 
-  const userData = await User.updateOne({ userId: id }, user);
-  const userInfo = await User.findOne({ userId: id }, { _id: 0, orders: 0 });
-  return { userData, userInfo };
+  const result = await User.findOneAndUpdate({ userId: id }, user, {
+    new: true,
+  });
+
+  return result;
+
+  // const userData = await User.updateOne({ userId: id }, user);
+  // const userInfo = await User.findOne({ userId: id }, { _id: 0, orders: 0 });
+  // return { userData, userInfo };
 };
 
 // delete     api/users/:userId

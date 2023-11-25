@@ -84,17 +84,27 @@ const updateUser = async (req: Request, res: Response) => {
     const id = req.params?.userId;
     const userData = req.body;
 
-    const parsedUserData = userValidation.parse(userData);
+    // const parsedUserData = userValidation.parse(userData);
     const result = await UserServices.updateUserInfoDb(
       parseFloat(id),
-      parsedUserData,
+      userData,
     );
-    if (result?.userData)
+    if (!result) {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+        error: {
+          code: 404,
+          description: 'User not found',
+        },
+      });
+    } else {
       res.status(200).json({
         success: true,
         message: 'User updated successfully!',
-        data: result.userInfo,
+        data: result,
       });
+    }
 
     // eslint-disable-next-line
   } catch (error: any) {
